@@ -1,0 +1,39 @@
+FROM kalilinux/kali-rolling:latest
+ENV DEBIAN_FRONTEND=noninteractive \
+    AWS_CONFIG_FILE=/home/attacker/.aws/config \
+    AWS_CA_BUNDLE=/certs/lab.crt \
+    CURL_CA_BUNDLE=/certs/lab.crt \
+    SSL_CERT_FILE=/certs/lab.crt \
+    AWS_EC2_METADATA_DISABLED=true \
+    AWS_DEFAULT_REGION=us-east-1 \
+    AWS_RESPONSE_CHECKSUM_VALIDATION=when_required \
+    AWS_REQUEST_CHECKSUM_CALCULATION=when_required
+RUN printf '%s\n' \
+      'Types: deb' \
+      'URIs: http://archive-4.kali.org/kali' \
+      'Suites: kali-rolling' \
+      'Components: main contrib non-free non-free-firmware' \
+      'Signed-By: /usr/share/keyrings/kali-archive-keyring.gpg' \
+      > /etc/apt/sources.list.d/kali.sources \
+    && apt-get update && apt-get install -y --no-install-recommends \
+      bash ca-certificates curl jq nmap ffuf awscli openssl python3 coreutils \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd --create-home --uid 1000 --shell /bin/bash attacker \
+    && install -d -o attacker -g attacker /home/attacker/loot /home/attacker/.aws \
+    && printf '[default]\nregion = us-east-1\noutput = json\nca_bundle = /certs/lab.crt\ns3 =\n    addressing_style = path\n' > /home/attacker/.aws/config \
+    && chown attacker:attacker /home/attacker/.aws/config
+ARG TTYD_SHA256=8a217c968aba172e0dbf3f34447218dc015bc4d5e59bf51db2f2cd12b7be4f55
+RUN curl --cacert /etc/ssl/certs/ca-certificates.crt -fsSL https://github.com/tsl0922/ttyd/releases/download/1.7.7/ttyd.x86_64 -o /usr/local/bin/ttyd \
+    && echo "${TTYD_SHA256}  /usr/local/bin/ttyd" | sha256sum -c - \
+    && chmod 0755 /usr/local/bin/ttyd
+COPY --chown=1000:1000 attacker/run-kill-chain.sh attacker/paths.txt /home/attacker/
+RUN chmod 0755 /home/attacker/run-kill-chain.sh \
+    && printf '%s\n' 'export TARGET=https://victim' 'export S3_ENDPOINT=https://mock-s3' \
+       'printf "\\nKali lab workstation — target %s\\nRun ./run-kill-chain.sh to replay the full local sequence.\\n" "$TARGET"' \
+       > /home/attacker/.bashrc \
+    && printf '%s\n' '[[ -f ~/.bashrc ]] && . ~/.bashrc' > /home/attacker/.bash_profile \
+    && chown attacker:attacker /home/attacker/.bashrc /home/attacker/.bash_profile
+USER attacker:attacker
+WORKDIR /home/attacker
+EXPOSE 7681
+ENTRYPOINT ["/usr/local/bin/ttyd", "-p", "7681", "-i", "0.0.0.0", "-W", "-O", "-S", "-C", "/certs/lab.crt", "-K", "/certs/lab.key", "-m", "1", "-w", "/home/attacker", "/bin/bash", "-l"]

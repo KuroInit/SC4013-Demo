@@ -1,0 +1,7 @@
+FROM python:3.13-alpine
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+WORKDIR /app
+COPY mock_metadata.py /app/mock_metadata.py
+USER 10001:10001
+EXPOSE 8082
+ENTRYPOINT ["python", "-B", "/app/mock_metadata.py"]

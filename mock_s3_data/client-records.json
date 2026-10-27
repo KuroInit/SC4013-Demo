@@ -1,0 +1,43 @@
+{
+  "bucket": "northstar-client-data-demo",
+  "object": "client-records.json",
+  "classification": "synthetic training data; no real people or identifiers",
+  "records": [
+    {
+      "client_id": "NS-DEMO-1001",
+      "full_name": "Avery Example",
+      "email": "avery@example.invalid",
+      "phone": "+1-202-555-0101",
+      "mailing_address": "100 Demo Avenue",
+      "account_number": "NS-DEMO-0001",
+      "account_balance": "$0.00"
+    },
+    {
+      "client_id": "NS-DEMO-1002",
+      "full_name": "Jordan Sample",
+      "email": "jordan@example.invalid",
+      "phone": "+1-202-555-0102",
+      "mailing_address": "200 Sample Street",
+      "account_number": "NS-DEMO-0002",
+      "account_balance": "$0.00"
+    },
+    {
+      "client_id": "NS-DEMO-1003",
+      "full_name": "Casey Fiction",
+      "email": "casey@example.invalid",
+      "phone": "+1-202-555-0103",
+      "mailing_address": "300 Fiction Road",
+      "account_number": "NS-DEMO-0003",
+      "account_balance": "$0.00"
+    },
+    {
+      "client_id": "NS-DEMO-1004",
+      "full_name": "Riley Placeholder",
+      "email": "riley@example.invalid",
+      "phone": "+1-202-555-0104",
+      "mailing_address": "400 Placeholder Lane",
+      "account_number": "NS-DEMO-0004",
+      "account_balance": "$0.00"
+    }
+  ]
+}

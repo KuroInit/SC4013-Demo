@@ -1,0 +1,10 @@
+robots.txt
+api/public/status
+api/public/application-summary
+api/auth/register
+api/auth/login
+api/document-preview
+documents/sample-statement.txt
+security/audit
+openapi.json
+swagger.json
