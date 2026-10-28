@@ -31,6 +31,9 @@ services:
       context: .
       dockerfile: Dockerfile.kali
     image: sc4013-kali-attacker:local
+    entrypoint: ["/usr/local/bin/ttyd", "-p", "7681", "-i", "0.0.0.0", "-W", "-S", "-C", "/certs/lab.crt", "-K", "/certs/lab.key", "-m", "1", "-w", "/home/attacker", "/bin/bash", "-l"]
+    environment:
+      AWS_PAGER: ""
     volumes:
       - ./.certs:/certs:ro
     depends_on:
